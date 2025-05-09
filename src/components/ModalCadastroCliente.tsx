@@ -77,12 +77,22 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
       setGeneralError("Ocorreu um erro inesperado. Tente novamente.");
     }
   };
-
+  const formatar = (valor: string, tipo: 'cpf' | 'cnpj' | 'contato' | 'cep') => {
+    const numeros = valor.replace(/\D/g, '');
+    if (tipo === 'cpf') return numeros.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    if (tipo === 'cnpj') return numeros.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    if (tipo === 'contato') return numeros.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    if (tipo === 'cep') return numeros.replace(/(\d{5})(\d)/, '$1-$2');
+    return valor;
+  };
+  
+  const cpfCnpjPlaceholder = tipoCliente === 'PF' ? '000.000.000-00' : '00.000.000/0000-00';
+  
   if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
-     <div className="fixed inset-0 bg-black bg-opacity-50" />
+     <div className="fixed inset-0 bg-opacity-50" />
       <div className="relative bg-[#100D1E] p-8 text-white border border-[#292343] shadow-xl" style={{ width: 800, height: 680 }}>
         
       <div className="absolute top-0 left-0 w-full h-1">
@@ -162,24 +172,44 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
             </div>
 
             <div>
-              <label className='text-gray-400'>{tipoCliente === 'PF' ? "CPF" : "CNPJ"}</label>
-              <input {...register("cpf_cnpj")}
-                     className="w-full px-4 py-2 rounded bg-[#1D1933] text-white" placeholder={tipoCliente ==='PF' ? "000.000.000-00" : "00.000.000/0000-00"} />
-               {errors.cpf_cnpj && <p className="text-red-400 text-xs">{errors.cpf_cnpj.message}</p>}
+             <label className="block mb-1 text-sm text-gray-400">{tipoCliente === 'PF' ? "CPF" : "CNPJ"}</label>
+             <input
+          {...register("cpf_cnpj", {
+            required: true,
+            onChange: e => e.target.value = formatar(e.target.value, tipoCliente === 'PF' ? 'cpf' : 'cnpj')
+          })}
+          maxLength={tipoCliente === 'PF' ? 14 : 18}
+          placeholder={cpfCnpjPlaceholder}
+          className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
+        />
+                {errors.cpf_cnpj && <p className="text-red-400 text-xs">{errors.cpf_cnpj.message}</p>}
             </div>
             <div className="col-span-1">
-              <label className="block mb-1 text-sm text-gray-400">Responsável</label>
-              <input {...register("responsavel")} placeholder="Luiz Da Silva" className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400" />
-              {errors.responsavel && <p className="text-red-400 text-xs">{errors.responsavel.message}</p>}
+            <label className="block mb-1 text-sm text-gray-400">Responsável</label>
+                <input 
+                {...register("responsavel", {
+                  onChange: (e) => e.target.value = formatar(e.target.value, 'contato')
+                })}maxLength={15} 
+                placeholder='(00) 00000-0000'
+                className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"/>
+                {errors.responsavel && <p className="text-red-400 text-xs">{errors.responsavel.message}</p>}
             </div>
            
           </div>
 
           <div className="grid grid-cols-4 gap-4 mb-4 pt-10">
           <div className="col-span-1">
-              <label className="block mb-1 text-sm text-gray-400">Contato</label>
-              <input {...register("contato")} placeholder="(00) 0 0000.0000" className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400" />
-              {errors.contato && <p className="text-red-400 text-xs">{errors.contato.message}</p>}
+          <label className="block mb-1 text-sm text-gray-400">Contato</label>
+                <input
+                  {...register("contato", {
+                    onChange: (e) => e.target.value = formatar(e.target.value, 'contato')
+                  })}
+                  maxLength={15}
+                  placeholder="(00) 00000-0000"
+                  className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
+                 
+                />
+                {errors.contato && <p className="text-red-400 text-xs">{errors.contato.message}</p>}
             </div>
             <div>
               <label className="block mb-1 text-sm text-gray-400">E-mail</label>
@@ -187,9 +217,16 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
               {errors.email?.message && <p className="text-red-400 text-xs">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm text-gray-400">CEP</label>
-              <input {...register("cep")} placeholder="00000-000" className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400" />
-              {errors.cep && <p className="text-red-400 text-xs">{errors.cep.message}</p>}
+            <label className="block mb-1 text-sm text-gray-400">CEP</label>
+                <input
+                  {...register("cep", {
+                    onChange: (e) => e.target.value = formatar(e.target.value, 'cep')
+                  })}
+                  maxLength={9}
+                  placeholder="00000-000"
+                  className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
+                />
+                {errors.cep && <p className="text-red-400 text-xs">{errors.cep.message}</p>}
             </div>
             <div>
               <label className="block mb-1 text-sm text-gray-400">Rua</label>

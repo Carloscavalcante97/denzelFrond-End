@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Menu, Home, Box, Repeat, Bug, PartyPopper, Layers3 } from "lucide-react";
 import Image from "next/image";
 import Logo from "/public/Denzel-Logo.svg";
+import Linha from "/public/Linha.png";
 
 export default function SidebarMobile() {
   const [aberto, setAberto] = useState(false);
@@ -13,8 +14,10 @@ export default function SidebarMobile() {
       {/* Ícone do sanduíche */}
       <div className="p-4">
         <button onClick={() => setAberto(true)} className="text-purple-400">
-          <Menu size={28} />
+          <Menu size={28} className="mb-3"/>
+          
         </button>
+        <Image src={Linha} alt="Linha decorativa" className="w-full" height={5} priority />
       </div>
 
       {/* Menu lateral */}

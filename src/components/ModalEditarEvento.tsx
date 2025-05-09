@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import RelogioEditar from "/public/relogioEditar.svg";
 import BuscarColaboradorModal from "../components/ModalRecrutarMontagem";
 import LinhaModal from '/public/Linha-Modal.png';
+import xModal from "/public/Fechar-Modal.svg";
 
 interface EditarEventoModalProps {
   isOpen: boolean;
@@ -319,31 +320,31 @@ const eventoData = data || null;
   
   
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-    >
-      
-      <div className="bg-[#1c1530] text-white p-8 rounded-xl w-[900px] max-h-[100vh] overflow-y-auto shadow-2xl relative">
-      <div className="absolute top-0 left-0 w-full h-1">
-    <Image 
-        src={LinhaModal} 
-        alt="Linha decorativa" 
-        layout="responsive"
-        width={800} 
-        height={5} 
-        priority 
-        className="w-full"
-    />
-</div>
-        <Image
-          src={title}
-          alt="title"
-          width={203}
-          height={40}
-          className="mb-6"
-        />
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+
+    <div className="fixed inset-0 flex items-center justify-center p-4">
+      <Dialog.Panel className="relative bg-[#1c1530] text-white p-8 rounded-xl w-[900px] max-h-[100vh] overflow-y-auto shadow-2xl border border-[#292343]">
+      <button
+    onClick={onClose}
+    className="absolute top-4 right-4 z-50 hover:scale-110 transition-transform"
+    aria-label="Fechar modal"
+  >
+    <Image src={xModal} alt="Fechar" width={24} height={24} />
+  </button>
+        <div className="absolute top-0 left-0 w-full h-[6px]">
+          <Image 
+            src={LinhaModal} 
+            alt="Linha decorativa" 
+            layout="responsive"
+            width={900} 
+            height={6} 
+            className="w-full object-cover rounded-t-xl"
+            priority
+          />
+        </div>
+
+        <Image src={title} alt="title" width={203} height={40} className="mb-6 mt-2" />
 
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div>
@@ -460,7 +461,7 @@ const eventoData = data || null;
                     name="inicioHora"
                     value={formData.inicioHora}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
+                    className="w-[140px] pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
                   />
                 </div>
               </div>
@@ -480,7 +481,7 @@ const eventoData = data || null;
                     name="fimHora"
                     value={formData.fimHora}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
+                    className="w-[140px] pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
                   />
                 </div>
               </div>
@@ -536,7 +537,7 @@ const eventoData = data || null;
                   name="montagemHora"
                   value={formData.montagemHora}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
+                  className="w-[140px] pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
                 />
               </div>
             </div>
@@ -609,7 +610,7 @@ const eventoData = data || null;
                   name="desmontagemHora"
                   value={formData.desmontagemHora}
                   onChange={handleChange}
-                  className="w-full  pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none"
+                  className="w-[140px]  pl-10 pr-2 py-2 bg-transparent text-white text-lg appearance-none focus:outline-none [&::-webkit-calendar-picker-indicator]:hidden"
                 />
               </div>
             </div>
@@ -641,6 +642,7 @@ const eventoData = data || null;
   }}
   cargo={cargoSelecionado}
 />
+</Dialog.Panel>
       </div>
      
     </Dialog>

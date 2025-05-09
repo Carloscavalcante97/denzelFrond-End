@@ -9,6 +9,7 @@ import Fechar from "/public/Fechar-Modal.svg";
 import Voltar from "/public/Voltar.png";
 import Avancar from "/public/Avancar.png";
 import NovoColaborador from "/public/NovoColaborador.svg";
+import AlertaColaboradorRegistrado from "./AlertaNovoColaborador";
 
 interface ColaboradorForm {
   Nome: string;
@@ -23,6 +24,7 @@ interface ColaboradorForm {
 interface ModalCadastroColaboradorProps {
   isOpen: boolean;
   onClose: () => void;
+  onNovoColaborador: () => void;
 }
 
 export default function ModalCadastroColaborador({
@@ -39,7 +41,7 @@ export default function ModalCadastroColaborador({
     mode: "onChange", // Ativa validação em tempo real
   });
   const [generalError, setGeneralError] = useState<string | null>(null);
-
+  const [alertaAberto, setAlertaAberto] = useState(false);
   const onSubmit: SubmitHandler<ColaboradorForm> = async (data) => {
     if (data.senha !== data.confirmarSenha) {
       setGeneralError("As senhas não conferem.");
@@ -77,7 +79,7 @@ export default function ModalCadastroColaborador({
               });
             }
           });
-          setGeneralError(null); // zera o erro geral
+          setGeneralError(null); 
         } else if (errorData.message) {
           setGeneralError(errorData.message);
         }
@@ -85,23 +87,28 @@ export default function ModalCadastroColaborador({
         return;
       }
 
-      alert("Colaborador criado com sucesso!");
-      onClose();
+      setAlertaAberto(true);
     } catch (error) {
       console.error(error);
       setGeneralError((error as Error).message);
     }
   };
-
+  const formatar = (valor: string, tipo: 'cpf' | 'cnpj' | 'contato' | 'cep') => {
+    const numeros = valor.replace(/\D/g, '');
+    if (tipo === 'cpf') return numeros.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    if (tipo === 'contato') return numeros.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    return valor;
+  };
   if (!isOpen) return null;
 
   return (
+    <>
     <Dialog
       open={isOpen}
       onClose={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center"
     >
-      <div className="fixed inset-0 bg-black bg-opacity-50" />
+      <div className="fixed inset-0 bg-opacity-50" />
       <div className="relative bg-[#100D1E] p-8 text-white border border-[#292343] shadow-xl w-[800px] h-[620px] rounded-lg">
         <div className="absolute top-0 left-0 w-full h-1">
           <Image
@@ -164,9 +171,12 @@ export default function ModalCadastroColaborador({
           {/* Inputs */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                Nome
+              </label>
               <input
                 {...register("Nome", { required: true })}
-                placeholder="Nome"
+                placeholder="Antônio Ricardo"
                 className="px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
               />
               {errors.Nome && (
@@ -177,9 +187,17 @@ export default function ModalCadastroColaborador({
             </div>
 
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                CPF
+              </label>
               <input
-                {...register("cpf", { required: true })}
-                placeholder="CPF"
+                {...register("cpf", {
+                  onChange: (e) => {
+                    e.target.value = formatar(e.target.value, 'cpf');
+                  },
+                })}
+                maxLength={14}
+                placeholder="000.000.000-00"
                 className="px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
               />
               {errors.cpf && (
@@ -192,9 +210,18 @@ export default function ModalCadastroColaborador({
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                Contato
+              </label>
               <input
-                {...register("contato", { required: true })}
-                placeholder="Contato"
+                {...register("contato", {
+                  onChange: (e) => {
+                    e.target.value = formatar(e.target.value, 'contato');
+                  },
+                  required: "O contato é obrigatório.",
+                })}
+                placeholder="(00) 00000-0000"
+                maxLength={15}
                 className="px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
               />
               {errors.contato && (
@@ -204,9 +231,12 @@ export default function ModalCadastroColaborador({
               )}
             </div>
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                E-mail
+              </label>
               <input
                 {...register("email", { required: true })}
-                placeholder="E-mail"
+                placeholder="colaborador@email.com"
                 className="px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
               />
               {errors.email && (
@@ -219,6 +249,9 @@ export default function ModalCadastroColaborador({
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                Senha
+              </label>
               <input
                 {...register("senha", {
                   required: "A senha é obrigatória.",
@@ -249,6 +282,9 @@ export default function ModalCadastroColaborador({
               )}
             </div>
             <div className="flex flex-col">
+              <label className="block mb-2 text-sm text-white">
+                Confirmar Senha
+              </label>
             <input
     {...register("confirmarSenha", {
       required: "Confirmação de senha é obrigatória",
@@ -297,5 +333,17 @@ export default function ModalCadastroColaborador({
         </form>
       </div>
     </Dialog>
+     <AlertaColaboradorRegistrado
+     aberto={alertaAberto}
+     onFechar={() => {
+       setAlertaAberto(false);
+       onClose();
+     }}
+     onNovoColaborador={() => {
+       setAlertaAberto(false);
+       
+     }}
+   />
+   </>
   );
 }

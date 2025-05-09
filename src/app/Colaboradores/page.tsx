@@ -34,6 +34,9 @@ export default function Colaborador() {
   const [searchTerm, setSearchTerm] = useState("");
   const [todosColaboradores, setTodosColaboradores] = useState<IUsuario[]>([]);
 
+  const abrirNovoColaborador = () => {
+    setModalOpen(true);    
+  };
   const limit = 10;
   const atualizarListas = async () => {
     await fetchColaboradores();
@@ -332,7 +335,14 @@ export default function Colaborador() {
   />
 )}
 
-      <ModalCadastroColaborador isOpen={modalOpen} onClose={() => { setModalOpen(false); atualizarListas(); }} />
+<ModalCadastroColaborador
+  isOpen={modalOpen}
+  onClose={() => {
+    setModalOpen(false);
+    atualizarListas();
+  }}
+  onNovoColaborador={abrirNovoColaborador}
+/>
       
       <Footer />
     </div>

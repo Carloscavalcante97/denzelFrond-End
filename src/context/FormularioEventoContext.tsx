@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface FormData {
   [key: string]: string | number | boolean;
@@ -16,6 +16,8 @@ type SelectedDates = Record<string, Date | undefined>;
 interface FormularioEventoContextType {
   idCliente: number | null;
   setIdCliente: React.Dispatch<React.SetStateAction<number | null>>;
+  idEvento: number | null;
+  setIdEvento: React.Dispatch<React.SetStateAction<number | null>>;
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   selectedDates: SelectedDates;
@@ -40,14 +42,22 @@ export const FormularioEventoProvider = ({ children }: { children: React.ReactNo
   const [selectedDates, setSelectedDates] = useState<SelectedDates>({});
   const [imagens, setImagens] = useState<File[]>([]);
   const [materiais, setMateriais] = useState<MaterialSelecionado[]>([]);
+  
   const [idCliente, setIdCliente] = useState<number | null>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("idCliente");
       return stored ? Number(stored) : null;
     }
-    return null; // No servidor, assume null
+    return null;
   });
-  
+
+  const [idEvento, setIdEvento] = useState<number | null>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("idEvento");
+      return stored ? Number(stored) : null;
+    }
+    return null;
+  });
 
   const limparFormulario = () => {
     setFormData({});
@@ -55,6 +65,9 @@ export const FormularioEventoProvider = ({ children }: { children: React.ReactNo
     setImagens([]);
     setMateriais([]);
     setIdCliente(null);
+    setIdEvento(null);
+    localStorage.removeItem("idCliente");
+    localStorage.removeItem("idEvento");
   };
 
   const salvarFormulario = ({
@@ -73,11 +86,16 @@ export const FormularioEventoProvider = ({ children }: { children: React.ReactNo
     setImagens(imagens);
     setMateriais(materiais);
 
-    // Se `idCliente` estiver no formData, atualiza ele também
-    const idFromForm = formData.idCliente;
-    if (typeof idFromForm === "number") {
-      setIdCliente(idFromForm);
-      localStorage.setItem("idCliente", String(idFromForm));
+    const idFromFormCliente = formData.idCliente;
+    if (typeof idFromFormCliente === "number") {
+      setIdCliente(idFromFormCliente);
+      localStorage.setItem("idCliente", String(idFromFormCliente));
+    }
+
+    const idFromFormEvento = formData.idEvento;
+    if (typeof idFromFormEvento === "number") {
+      setIdEvento(idFromFormEvento);
+      localStorage.setItem("idEvento", String(idFromFormEvento));
     }
   };
 
@@ -86,6 +104,8 @@ export const FormularioEventoProvider = ({ children }: { children: React.ReactNo
       value={{
         idCliente,
         setIdCliente,
+        idEvento,
+        setIdEvento,
         formData,
         setFormData,
         selectedDates,

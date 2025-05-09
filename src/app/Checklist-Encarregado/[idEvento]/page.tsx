@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -28,6 +28,8 @@ import SaneamentoIcon from "/public/sanitario.svg";
 import BoxIcon from "/public/Material.svg";
 import ModalMudarStatus from "../../../components/ModalStatus";
 import { useParams } from "next/navigation";
+import SidebarMobile from "@/components/sideBarMobile";
+import BuscarEventos from "@/components/BuscarEventos";
 
 interface Material {
   id: string;
@@ -42,6 +44,9 @@ export default function ChecklistEncarregado() {
   const [materiaisAbertos, setMateriaisAbertos] = useState<Record<string, boolean>>({});
   const [selecionados, setSelecionados] = useState<Record<string, boolean>>({});
   const [modalAberto, setModalAberto] = useState(false);
+  const [termoBusca, setTermoBusca] = useState("");
+  const [debouncedTermo, setDebouncedTermo] = useState("");
+
   const params = useParams();
   const idEvento = params?.idEvento;
 
@@ -116,7 +121,6 @@ export default function ChecklistEncarregado() {
     { nome: "Geradores", valor: "gerador" },
   ];
 
-
   const fetchMateriais = useCallback(async (id: string | string[]) => {
     try {
       const response = await fetch(`https://denzel-backend.onrender.com/api/materiais/Listar-por-evento/${id}`, {
@@ -124,11 +128,10 @@ export default function ChecklistEncarregado() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
       if (!response.ok) throw new Error("Erro ao buscar materiais");
       const data = await response.json();
-      console.log("Materiais recebidos:", data);
-  
+
       const materiaisComId: Material[] = data
         .filter((item: { id?: string; Nome: string; status: string; categoria: number }) => item.id !== undefined)
         .map((item: { id: string; Nome: string; status: string; categoria: number }) => ({
@@ -137,21 +140,34 @@ export default function ChecklistEncarregado() {
           status: item.status.toLowerCase() as Material["status"],
           categoria: mapCategoria(item.categoria),
         }));
-  
+
       setMateriais(materiaisComId);
     } catch (err) {
       console.error("Erro ao buscar materiais:", err);
     }
-  }, []); // Agora, a função é criada com o useCallback para não depender do useEffect
-  
+  }, []);
+
   useEffect(() => {
     if (idEvento) {
       fetchMateriais(idEvento);
     }
-  }, [idEvento, fetchMateriais]); // Usando o fetchMateriais otimizado com useCallback
-  
+  }, [idEvento, fetchMateriais]);
 
-  const agrupado = materiais.reduce(
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedTermo(termoBusca.trim().toLowerCase());
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [termoBusca]);
+
+  const materiaisFiltrados = materiais.filter(
+    (mat) =>
+      mat.Nome.toLowerCase().includes(debouncedTermo) ||
+      mat.id.toLowerCase().includes(debouncedTermo)
+  );
+
+  const agrupado = materiaisFiltrados.reduce(
     (acc: Record<string, Record<string, Material[]>>, mat) => {
       if (!acc[mat.categoria]) acc[mat.categoria] = {};
       if (!acc[mat.categoria][mat.Nome]) acc[mat.categoria][mat.Nome] = [];
@@ -173,17 +189,14 @@ export default function ChecklistEncarregado() {
   const idsSelecionados = Object.keys(selecionados).filter((id) => selecionados[id]);
 
   return (
+    <>
+      <SidebarMobile />
     <div className="min-h-screen bg-[#0D0D1D] text-white p-6 pb-32 relative">
+      
       <div className="flex items-center gap-2 mb-6">
-        <Search className="text-cyan-400" />
-        <input
-          placeholder="Buscar Materiais"
-          className="bg-transparent border-b border-cyan-400 outline-none px-2 flex-1"
-        />
-        <button className="ml-auto text-sm flex items-center gap-1 text-white">
-          <SlidersHorizontal size={16} />
-          Filtrar
-        </button>
+      
+      <BuscarEventos value={termoBusca} onChange={setTermoBusca} />
+       
       </div>
 
       {categoriasDisponiveis.map((cat) => (
@@ -280,16 +293,15 @@ export default function ChecklistEncarregado() {
                               <span>ID {mat.id}</span>
                             </div>
                             <div className="flex items-center gap-2">
-  {getStatusIcon(mat.status) && (
-    <Image
-      src={getStatusIcon(mat.status)!}
-      alt={mat.status}
-      width={74}
-      height={16}
-    />
-  )}
-</div>
-
+                              {getStatusIcon(mat.status) && (
+                                <Image
+                                  src={getStatusIcon(mat.status)!}
+                                  alt={mat.status}
+                                  width={74}
+                                  height={16}
+                                />
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -303,7 +315,10 @@ export default function ChecklistEncarregado() {
       ))}
 
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center gap-4 z-50">
-        <button onClick={() => setModalAberto(true)} className="bg-gradient-to-l from-[#100D1E] to-[#100D1E] hover:from-[#9C60DA] hover:to-[#43A3D5] transition duration-300 rounded-full">
+        <button
+          onClick={() => setModalAberto(true)}
+          className="bg-gradient-to-l from-[#100D1E] to-[#100D1E] hover:from-[#9C60DA] hover:to-[#43A3D5] transition duration-300 rounded-full"
+        >
           <Image src={MudarStatus} alt="Mudar Status" width={163} height={40} />
         </button>
       </div>
@@ -319,5 +334,6 @@ export default function ChecklistEncarregado() {
         idsSelecionados={idsSelecionados}
       />
     </div>
+    </>
   );
 }

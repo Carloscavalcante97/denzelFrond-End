@@ -258,12 +258,19 @@ export default function CadastrarMateriais() {
 
       {/* Botão isolado fora da caixa */}
       <button
-        onClick={adicionarMaterial}
-        className="w-full mt-4 py-2 rounded-md border border-[#292343] text-white hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] transition-all flex items-center justify-center gap-2 bg-[#1D1933]"
-      >
-        <Package className="w-5 h-5" />
-        Adicionar Material
-      </button>
+  onClick={adicionarMaterial}
+  disabled={!nomeMaterial.trim() || quantidade <= 0}
+  className={`
+    w-full mt-4 py-2 rounded-md border border-[#292343] flex items-center justify-center gap-2 transition-all
+    ${!nomeMaterial.trim() || quantidade <= 0 
+      ? "bg-[#1D1933] text-white opacity-50 cursor-not-allowed"
+      : "bg-[#1D1933] text-white hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5]"}
+  `}
+>
+  <Package className="w-5 h-5" />
+  Adicionar Material
+</button>
+
 
       {/* Navbar Inferior */}
       <NavbarInferior
