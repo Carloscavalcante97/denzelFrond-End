@@ -62,12 +62,16 @@ export default function Login() {
       console.log(response);
 
       if (!response.ok) throw new Error("Erro ao buscar colaborador.");
-
+      
       const data = await response.json();
 
       // 🚨 Se não for encarregado, manda para home padrão
-     const cargo = data.cargo?.toLowerCase();
-const isEncarregado = cargo === "encarregado iluminacao" || cargo === "encarregado estrutura";
+     console.log(data);
+      const cargo = data.funcao;
+
+const isEncarregado = cargo === "Encarregado Iluminacao"|| cargo === "Encarregado Estrutura";
+console.log("Cargo:", cargo);
+console.log("É encarregado?", isEncarregado);
 
 if (!isEncarregado) {
   router.push('/clientes');
@@ -75,10 +79,11 @@ if (!isEncarregado) {
 }
 
       console.log(data.IdMontagem, data.IdDesmontagem);
-      const idEvento = data.idEventoMontagem || data.idEventoDesmontagem;
+      const idEvento = data.IdMontagem || data.IdDesmontagem;
+console.log("ID evento:", idEvento);
 
       if (idEvento) {
-        router.push(`/checklist-encarregado/${idEvento}`);
+        router.push(`/Checklist-Encarregado/${idEvento}`);
       } else {
         setMensagem("Sem eventos atribuídos no momento.");
       }
