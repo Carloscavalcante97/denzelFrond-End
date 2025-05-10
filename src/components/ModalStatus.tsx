@@ -21,6 +21,7 @@ import statusManutencaoMarcado from "/public/statusManutencaoMarcado.svg";
 import statusRealocacao from "/public/statusRealocacao.svg";
 import statusRealocacaoMarcado from "/public/statusRealocacaoHover.svg";
 import AlertaStatusModificado from "./AlertaStatusModificado";
+import { StaticImageData } from "next/image";
 
 interface ModalMudarStatusProps {
   aberto: boolean;
@@ -38,7 +39,7 @@ const statusOpcoes = [
   "transposicao"
 ];
 
-const statusIcons: Record<string, { default: any; checked: any }> = {
+const statusIcons: Record<string, { default: StaticImageData; checked: StaticImageData }> = {
   "em estoque": { default: statusEstoque, checked: statusEstoqueMarcado },
   "em uso": { default: statusUso, checked: statusUsoMarcado },
   "em manutencao": {
@@ -49,6 +50,7 @@ const statusIcons: Record<string, { default: any; checked: any }> = {
   avariado: { default: statusAvariado, checked: statusAvariadoMarcado },
   transposicao: { default: statusRealocacao, checked: statusRealocacaoMarcado },
 };
+
 
 export default function ModalMudarStatus({
   aberto,

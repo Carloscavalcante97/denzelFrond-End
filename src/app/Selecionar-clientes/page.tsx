@@ -10,7 +10,6 @@ import Cliente from "../../@Types/Cliente";
 import ClienteModal from "../../components/ModalCadastroCliente"; 
 import { createCliente } from "../../helpers/ApiHelper";
 import NavPages from "../../components/NavPages";
-import ClientesTitulo from "/public/Titulo-Clientes.svg"
 import EventosIcon from "/public/Eventos.svg";
 import IdIcon from "/public/Id.svg";
 import TelefoneIcon from "/public/Telefone.svg";

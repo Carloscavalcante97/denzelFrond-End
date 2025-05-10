@@ -5,7 +5,6 @@ import Footer from "../../components/Footer";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import FrameCalendar from "../../components/FrameCalendar";
-import EventoColorido from "/public/EventoColorido.svg";
 import Image from "next/image";
 import UploadImagemMinimal from "../../components/UploaderComponent";
 import Calendario from "/public/CalendarioLinear.svg";
@@ -26,7 +25,6 @@ const CriarEvento = () => {
   const [modalDesmontagemAberto, setModalDesmontagemAberto] = useState(false);
   const [nomeResponsavelDesmontagem, setNomeResponsavelDesmontagem] = useState("");
   const [nomeResponsavelMontagem, setNomeResponsavelMontagem] = useState("");
-  const [erros, setErros] = useState<Record<string, string>>({});
 
 
   const {

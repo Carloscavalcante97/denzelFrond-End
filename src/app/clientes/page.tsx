@@ -43,7 +43,7 @@ const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(nul
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [dropdownLocked, setDropdownLocked] = useState(false);
-  const [hoverDeletar, setHoverDeletar] = useState(false);
+
 
   useEffect(() => {
     const tokenLocal = localStorage.getItem("token");

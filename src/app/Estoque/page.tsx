@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  Search,
   SlidersHorizontal,
 } from "lucide-react";
 import Image from "next/image";

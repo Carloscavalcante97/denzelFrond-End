@@ -15,7 +15,6 @@ interface BotaoEscolherClienteProps {
 export default function BotaoEscolherCliente({
   idCliente,
   onClick,
-  children = "Escolher Cliente",
 }: BotaoEscolherClienteProps) {
   const { setIdCliente } = useFormularioEvento();
   const [isHovered, setIsHovered] = useState(false);

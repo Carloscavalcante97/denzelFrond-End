@@ -16,7 +16,7 @@ import Profile from "/public/Profile.svg";
 import IUsuario from "../types/Usuarios";
 import ModalAlterarSenha from "./ModalAlterarSenha";
 import NotificacaoBadge from "./IconeNotificacao";
-import { Box, Layers3 } from "lucide-react";
+import { Box } from "lucide-react";
 import Cadastrar from "/public/CadastrarMateriais.svg";
 
 export default function Header() {
