@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModalAlterarSenha from '@/components/ModalAlterarSenha';
+import { pegarDadosDoToken } from '@/helpers/JwtDecoder';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [mostrarModalSenha, setMostrarModalSenha] = useState(false);
+  const [mensagem, setMensagem] = useState('');
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,7 +24,6 @@ export default function Login() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Erro ao fazer login:", errorData);
         setError(errorData.message || "Erro ao realizar o login.");
         return;
       }
@@ -30,17 +31,56 @@ export default function Login() {
       const data = await response.json();
       localStorage.setItem('token', data.token);
 
-      // ✅ Corrigido: verifica QuantidadeAcessos com "s"
       if (data.usuario?.QuantidadeAcessos === 0) {
         setMostrarModalSenha(true);
         return;
       }
 
-      router.push('/clientes');
+      await verificarEventoOuRedirecionar();
 
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       setError('Ocorreu um erro inesperado. Tente novamente.');
+    }
+  };
+
+  const verificarEventoOuRedirecionar = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const usuario = pegarDadosDoToken();
+      if (!usuario?.id) return;
+
+      const response = await fetch(`https://denzel-backend.onrender.com/api/usuarios/buscar/${usuario.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Erro ao buscar colaborador.");
+
+      const data = await response.json();
+
+      // 🚨 Se não for encarregado, manda para home padrão
+      if (data.cargo?.toLowerCase() !== 'encarregado') {
+        router.push('/clientes');
+        return;
+      }
+
+      const idEvento = data.idEventoMontagem || data.idEventoDesmontagem;
+
+      if (idEvento) {
+        router.push(`/checklist-encarregado/${idEvento}`);
+      } else {
+        setMensagem("Sem eventos atribuídos no momento.");
+      }
+
+    } catch (error) {
+      console.error("Erro ao verificar evento:", error);
+      setMensagem("Erro ao verificar eventos.");
     }
   };
 
@@ -58,14 +98,15 @@ export default function Login() {
 
       <div className="min-h-screen flex items-center justify-center bg-[#100D1E]">
         <form onSubmit={handleLogin} className="bg-[#1D1933] p-8 rounded shadow-md w-96 space-y-4">
-          <h2 className="text-2xl font-bold mb-4 text-transparent bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text hover:from-blue-400 hover:to-purple-500 transition-all duration-300">
+          <h2 className="text-2xl font-bold mb-4 text-transparent bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text">
             Login
           </h2>
 
           {error && <p className="text-red-500">{error}</p>}
+          {mensagem && <p className="text-yellow-500">{mensagem}</p>}
 
           <div>
-            <label className="mb-4 text-transparent bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text">Email</label>
+            <label className="text-sm text-white">Email</label>
             <input
               type="email"
               value={email}
@@ -76,7 +117,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="mb-4 text-transparent bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text">Senha</label>
+            <label className="text-sm text-white">Senha</label>
             <input
               type="password"
               value={senha}

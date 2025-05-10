@@ -9,6 +9,7 @@ import NavbarInferior from "../../components/NavPagesMobile";
 import { useRouter } from "next/navigation";
 import Quantidade from "/public/quantidade.svg";
 import AlertaMaterialRegistrado from "../../components/AlertaMaterialcadastrado";
+import finalizar from "/public/FinalizarCadastroEvento.svg";
 
 export default function RevisarMateriais() {
   const { materiais, setMateriais } = useMateriais();

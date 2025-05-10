@@ -14,11 +14,20 @@ import Desmontagem from "/public/Desmontagem.svg";
 import Relogio from "/public/Relogio.svg";
 import { useFormularioEvento } from "../../context/FormularioEventoContext";
 import Link from "next/link";
-
+import RelogioEditar from "/public/relogioEditar.svg";
+import BuscarColaboradorModal from "@/components/ModalRecrutarMontagem";
+import { buscarNomePorId } from "@/helpers/BuscarColaboradorPorId";
+import EventoTitle from "/public/NovoEventoTitle.svg";
 
 const CriarEvento = () => {
   const pickerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [inputKey, setInputKey] = useState(0);
+  const [modalMontagemAberto, setModalMontagemAberto] = useState(false);
+  const [modalDesmontagemAberto, setModalDesmontagemAberto] = useState(false);
+  const [nomeResponsavelDesmontagem, setNomeResponsavelDesmontagem] = useState("");
+  const [nomeResponsavelMontagem, setNomeResponsavelMontagem] = useState("");
+  const [erros, setErros] = useState<Record<string, string>>({});
+
 
   const {
     formData,
@@ -39,6 +48,31 @@ const CriarEvento = () => {
   const removerImagem = (index: number) => {
     setImagens((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const handleSelecionarMontagem = (colaboradoresSelecionados: { id: number; nome: string }[]) => {
+  if (colaboradoresSelecionados.length > 0) {
+    const colaborador = colaboradoresSelecionados[0];
+    setFormData((prev) => ({
+      ...prev,
+      responsavelMontagem: colaborador.id,
+    }));
+    setNomeResponsavelMontagem(colaborador.nome); 
+  }
+};
+
+
+const handleSelecionarDesmontagem = (colaboradoresSelecionados: { id: number; nome: string }[]) => {
+  if (colaboradoresSelecionados.length > 0) {
+    const colaborador = colaboradoresSelecionados[0];
+    setFormData((prev) => ({
+      ...prev,
+      responsavelDesmontagem: colaborador.id,
+    }));
+    setNomeResponsavelDesmontagem(colaborador.nome); 
+  }
+};
+
+
 
   const [showPicker, setShowPicker] = useState({
     inicio: false,
@@ -83,6 +117,20 @@ const CriarEvento = () => {
   };
 
   useEffect(() => {
+  if (typeof formData.responsavelMontagem === "number") {
+    buscarNomePorId(formData.responsavelMontagem).then((nome) => {
+      if (nome) setNomeResponsavelMontagem(nome);
+    });
+  }
+  if (typeof formData.responsavelDesmontagem === "number") {
+    buscarNomePorId(formData.responsavelDesmontagem).then((nome) => {
+      if (nome) setNomeResponsavelDesmontagem(nome);
+    });
+  }
+}, []);
+
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const clickedOutside = !Object.values(pickerRefs.current).some((ref) =>
         ref?.contains(event.target as Node)
@@ -95,14 +143,15 @@ const CriarEvento = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  
   return (
     
     <div className="min-h-screen flex flex-col bg-[#100D1E] text-white">
       <Header />
       <main className="flex-1 px-4 sm:px-8 md:px-16 lg:px-[320px] flex flex-col">
       <div className="flex items-center gap-2 mt-8 mb-4">
-      <Image src={EventoColorido} alt="Evento" />
-      <h2 className="text-3xl font-light text-hover-gradient ">  Novo Evento</h2>
+      <Image src={EventoTitle} alt="Evento" className="w-[235px] h-[40px]"/>
+    
       </div>
 
       {/* Navegação por etapas */}
@@ -112,8 +161,7 @@ const CriarEvento = () => {
         <span className="text-sky-400">Evento</span>
         <span className="text-gray-700">&gt;</span>
         <span className="text-gray-700">Solicitação de Materiais</span>
-        <span className="text-gray-700">&gt;</span>
-        <span className="text-gray-700">Revisão</span>
+        
       </div>
 
       {/* Formulário principal */}
@@ -181,7 +229,7 @@ const CriarEvento = () => {
     <h4 className="text-xl text-hover-gradient">Data do Evento</h4>
     </div>
     <div className="flex flex-col md:flex-row gap-4">
-      <div className="flex flex-col gap-2 w-[168px]">
+      <div className="flex flex-col gap-2 w-[215px]">
         <label className="text-slate-200">Início do Evento</label>
         <div className="relative w-full">
           <FrameCalendar
@@ -241,6 +289,13 @@ const CriarEvento = () => {
     <div className="flex gap-6">
       <div className="flex flex-col gap-2">
         <label className="text-slate-200">Hora de Início</label>
+         <Image
+                    src={RelogioEditar}
+                    alt="Relógio"
+                    width={20}
+                    height={20}
+                    className="absolute left-6"
+                  />
         <input
           type="time"
           name="inicioHora"
@@ -316,13 +371,15 @@ const CriarEvento = () => {
       <div className="flex flex-col gap-2">
         <label className="text-slate-200">Responsável pela Montagem</label>
         <input
-          type="text"
-          name="responsavelMontagem"
-          value={typeof formData.responsavelMontagem === "string" || typeof formData.responsavelMontagem === "number" ? formData.responsavelMontagem : ""}
-          onChange={handleInputChange}
-          placeholder="ID ou nome"
-          className="w-[200px] bg-transparent text-white px-4 py-2 border border-slate-200 rounded-sm"
-        />
+  type="text"
+  name="responsavelMontagem"
+  value={nomeResponsavelMontagem}
+  readOnly
+  onClick={() => setModalMontagemAberto(true)}
+  placeholder="Selecionar colaborador"
+  className="w-[200px] bg-transparent text-white px-4 py-2 border border-slate-200 rounded-sm cursor-pointer"
+/>
+
       </div>
     </div>
   </div>
@@ -379,26 +436,28 @@ const CriarEvento = () => {
 
       {/* Responsável */}
       <div className="flex flex-col gap-2">
-        <label className="text-slate-200">Responsável pela Desmontagem</label>
-        <input
-          type="text"
-          name="responsavelDesmontagem"
-          value={typeof formData.responsavelDesmontagem === "string" || typeof formData.responsavelDesmontagem === "number" ? formData.responsavelDesmontagem : ""}
-          onChange={handleInputChange}
-          placeholder="ID ou nome"
-          className="w-[200px] bg-transparent text-white px-4 py-2 border border-slate-200 rounded-sm"
-        />
-      </div>
+  <label className="text-slate-200">Responsável pela Desmontagem</label>
+  <input
+    type="text"
+    name="responsavelDesmontagem"
+    value={nomeResponsavelDesmontagem}
+    readOnly
+    onClick={() => setModalDesmontagemAberto(true)}
+    placeholder="Selecionar colaborador"
+    className="w-[200px] bg-transparent text-white px-4 py-2 border border-slate-200 rounded-sm cursor-pointer"
+  />
+</div>
+
     </div>
   </div>
 </div>
 
       {/* Botões de navegação */}
       <div className="flex justify-start gap-4 mt-[80px] mb-[40px] pt-4 border-t border-[#292343]">
-        <button className="px-6 py-2 rounded-l-[30px] border border-slate-200 text-white">Voltar</button>
+        <button className="px-6 py-2 rounded-l-[30px] border border-slate-200 text-white hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded-l-4xl">Voltar</button>
         <Link href="/AdicionarMateriais">
   <button
-    className="px-6 py-2 rounded-r-[30px] border border-slate-200 text-white"
+    className="px-6 py-2  border border-slate-200 text-white hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded-r-4xl"
     onClick={() =>
       salvarFormulario({ formData, selectedDates, imagens })
     }
@@ -412,6 +471,20 @@ const CriarEvento = () => {
       {/* Rodapé */}
       
  <Footer/>
+ <BuscarColaboradorModal
+  isOpen={modalMontagemAberto}
+  onClose={() => setModalMontagemAberto(false)}
+  onSelecionar={handleSelecionarMontagem}
+  cargo="encarregado estrutura"
+/>
+
+<BuscarColaboradorModal
+  isOpen={modalDesmontagemAberto}
+  onClose={() => setModalDesmontagemAberto(false)}
+  onSelecionar={handleSelecionarDesmontagem}
+  cargo="encarregado iluminacao"
+/>
+
     </div>
   );
 };

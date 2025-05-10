@@ -77,11 +77,11 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
       setGeneralError("Ocorreu um erro inesperado. Tente novamente.");
     }
   };
-  const formatar = (valor: string, tipo: 'cpf' | 'cnpj' | 'contato' | 'cep') => {
+   const formatar = (valor: string, tipo: 'cpf' | 'cnpj' | 'contato' | 'cep') => {
     const numeros = valor.replace(/\D/g, '');
     if (tipo === 'cpf') return numeros.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     if (tipo === 'cnpj') return numeros.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-    if (tipo === 'contato') return numeros.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    if (tipo === 'contato') return numeros.replace(/(\d{2})(\d{5})(\d{4})/, '$1 $2-$3');
     if (tipo === 'cep') return numeros.replace(/(\d{5})(\d)/, '$1-$2');
     return valor;
   };
@@ -189,7 +189,7 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
                 <input 
                 {...register("responsavel", {
                   onChange: (e) => e.target.value = formatar(e.target.value, 'contato')
-                })}maxLength={15} 
+                })}maxLength={13} 
                 placeholder='(00) 00000-0000'
                 className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"/>
                 {errors.responsavel && <p className="text-red-400 text-xs">{errors.responsavel.message}</p>}
@@ -204,7 +204,7 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
                   {...register("contato", {
                     onChange: (e) => e.target.value = formatar(e.target.value, 'contato')
                   })}
-                  maxLength={15}
+                  maxLength={13}
                   placeholder="(00) 00000-0000"
                   className="w-full px-4 py-2 rounded bg-[#1D1933] text-white placeholder-gray-400"
                  
@@ -244,7 +244,7 @@ export default function ClienteModal({ isOpen, onClose }: ClienteModalProps) {
           </div>
   <div className='w-[67.32px]'>
     <label className="block mb-1 text-sm text-gray-400">Estado</label>
-    <select {...register("estado")} className="w-[80px] px-4 py-2 rounded bg-[#1D1933] text-white">
+    <select {...register("estado")} className="w-[80px] h-[40px] px-4 py-2 rounded bg-[#1D1933] text-white">
       <option value="PE">PE</option>
       <option value="PB">PB</option>
       <option value="RN">RN</option>

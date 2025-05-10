@@ -23,6 +23,7 @@ export default function NavbarInferior({ podeVoltar, onVoltar, onRevisar, modoRe
         <Image
           src={podeVoltar ? VoltarAtivado : VoltarDesativado}
           alt="Voltar"
+          className="hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded-l-4xl"
           width={120}
           height={40}
         />
@@ -35,6 +36,7 @@ export default function NavbarInferior({ podeVoltar, onVoltar, onRevisar, modoRe
         <Image
           src={modoRevisao ? Finalizar : Revisar}
           alt={modoRevisao ? "Finalizar" : "Revisar"}
+          className="hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded-r-4xl"
           width={120}
           height={40}
         />

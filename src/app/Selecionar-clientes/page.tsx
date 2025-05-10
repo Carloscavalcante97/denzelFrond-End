@@ -17,7 +17,7 @@ import TelefoneIcon from "/public/Telefone.svg";
 import Link from "next/link";
 import BotaoEscolherCliente from "../../components/ButtonEscolherCliente";
 import BuscarCliente from "../../components/BuscarCliente";
-
+import Checklist from "/public/Checklist-Title.svg";
 
 export default function Clientes() {
   const USER_URL = "https://denzel-backend.onrender.com/api/clientes/Listar";
@@ -204,7 +204,7 @@ export default function Clientes() {
       <div className="flex-grow"> 
       <div className="max-w-screen-xl mx-auto px-6 py-6">
         <div className="flex items-center gap-2 text-xl font-bold">
-          <Image src={ClientesTitulo} alt="Clientes" width={170} height={40} />
+          <Image src={Checklist} alt="Clientes" width={170} height={40} />
          
         </div>
 

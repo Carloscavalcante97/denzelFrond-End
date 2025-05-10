@@ -17,6 +17,7 @@ import IUsuario from "../types/Usuarios";
 import ModalAlterarSenha from "./ModalAlterarSenha";
 import NotificacaoBadge from "./IconeNotificacao";
 import { Box, Layers3 } from "lucide-react";
+import Cadastrar from "/public/CadastrarMateriais.svg";
 
 export default function Header() {
   const [, setUserId] = useState<string>("");
@@ -100,7 +101,7 @@ export default function Header() {
           <NavItem href="/clientes" icon={Clientes} label="Clientes" />
           <NavItem href="/Eventos" icon={Eventos} label="Eventos" />
           <NavItemLucide href="/Estoque" icon={<Box size={20} />} label="Estoque" />
-          <NavItemLucide href="/Cadastrar-Materiais" icon={<Layers3 size={20} />} label="Cadastrar Materiais" />
+          <NavItem href="/Cadastrar-Materiais" icon={Cadastrar} label="Material" />
         </div>
 
         <div className="flex items-center gap-4">
@@ -181,7 +182,7 @@ function NavItem({ href, icon, label }: { href: string; icon: StaticImageData; l
   );
 }
 
-function NavItemLucide({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function NavItemLucide({ href, icon, label }: { href: string; icon: React.ReactNode; label?: string }) {
   return (
     <Link href={href}>
       <div className="flex items-center justify-center gap-2 cursor-pointer text-white p-2 hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded transition duration-300 w-[120px] h-[50px] font-lexend text-sm">

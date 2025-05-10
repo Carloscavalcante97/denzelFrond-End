@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
-import IconPessoa from "/public/Pessoa fisica.svg";
 import { useFormularioEvento } from "../context/FormularioEventoContext";
+import botaoEscolherCliente from "/public/BotaoEscolherCliente.svg";
+import botaoEscolherClienteHover from "/public/botaoEscolherClienteHover.svg";
 
 interface BotaoEscolherClienteProps {
   idCliente: number;
@@ -15,6 +18,7 @@ export default function BotaoEscolherCliente({
   children = "Escolher Cliente",
 }: BotaoEscolherClienteProps) {
   const { setIdCliente } = useFormularioEvento();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     localStorage.setItem("idCliente", idCliente.toString());
@@ -25,10 +29,16 @@ export default function BotaoEscolherCliente({
   return (
     <button
       onClick={handleClick}
-      className="inline-flex items-center justify-between gap-2 px-5 py-[10px] border border-transparent bg-[#100D1E] text-white text-base font-light rounded-r-full transition duration-300 hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="inline-flex items-center justify-between gap-2 px-5 py-[10px] text-white text-base font-light transition duration-200"
     >
-      <span className="whitespace-nowrap">{children}</span>
-      <Image src={IconPessoa} alt="Ícone Pessoa" width={20} height={20} />
+      <Image
+        src={isHovered ? botaoEscolherClienteHover : botaoEscolherCliente}
+        alt="Botão Escolher Cliente"
+        width={186}
+        height={40}
+      />
     </button>
   );
 }

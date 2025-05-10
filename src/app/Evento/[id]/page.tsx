@@ -166,17 +166,8 @@ const EventoDetalhes = () => {
   <Image src={image} alt="Imagens" className="w-5 h-5" />
   <span className="text-sm">Imagens</span>
 </button>
-          <div className="relative w-full md:w-auto">
-            <button className="flex items-center gap-2 border px-4 py-1 rounded-[30px] w-full md:w-auto justify-center">
-              <Image src={image} alt="Notificações" className="w-[20px] h-[20px]" />
-              <span className="text-sm">Notificações</span>
-            </button>
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">99+</span>
-          </div>
-          <button className="flex items-center gap-2 border px-4 py-1 rounded-[30px] w-full md:w-auto justify-center">
-            <Image src={image} alt="Imprimir" className="w-5 h-5" />
-            <span className="text-sm">Imprimir</span>
-          </button>
+         
+          
         </div>
       </div>
   
@@ -250,7 +241,7 @@ const EventoDetalhes = () => {
 
       {/* TABELA DE MATERIAIS */}
       <Card className="p-4 mt-8 mx-8 xl:px-[200px]">
-        <div className="flex gap-2 mb-4 xl:px-[200px]">
+        <div className="flex gap-2 mb-4 ">
           <Image src={Solicita} alt="Solicitação" width={273} height={30} />
         </div>
         <table className="w-full text-left border-collapse ">

@@ -3,18 +3,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import ClienteIcon from "/public/Cliente.png"; // Ajuste para o diretório correto
-import Editar from "/public/Editar.svg"; // Ajuste para o diretório correto
-import Filters from "/public/Filters.svg"; // Ajuste para o diretório correto
+import ClienteIcon from "/public/Cliente.png";
+import Editar from "/public/Editar.svg";
+import Filters from "/public/Filters.svg";
 import Image from "next/image";
 import Cliente from "../../types/Cliente";
 import ClienteModal from "../../components/ModalCadastroCliente"; 
 import { createCliente } from "../../helpers/ApiHelper";
 import NavPages from "../../components/NavPages";
-import ClientesTitulo from "/public/Titulo-Clientes.svg"; // Ajuste para o diretório correto
-import EventosIcon from "/public/Eventos.svg"; // Ajuste para o diretório correto
-import IdIcon from "/public/Id.svg"; // Ajuste para o diretório correto
-import TelefoneIcon from "/public/Telefone.svg"; // Ajuste para o diretório correto
+import ClientesTitulo from "/public/Titulo-Clientes.svg";
+import EventosIcon from "/public/Eventos.svg";
+import IdIcon from "/public/Id.svg";
+import TelefoneIcon from "/public/Telefone.svg";
 import EditarClienteModal from "../../components/MoldalEditarCliente";
 import ModalExcluirCliente from "../../components/ModalDeletarClientes";
 import BuscarCliente from "../../components/BuscarCliente";
@@ -39,10 +39,12 @@ const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(nul
   const [searchTerm, setSearchTerm] = useState("");
   const [todosClientes, setTodosClientes] = useState<Cliente[]>([]);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-const [ordenacaoAscendente, setOrdenacaoAscendente] = useState(true);
-const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
-const [mostrarDropdown, setMostrarDropdown] = useState(false);
-const [dropdownLocked, setDropdownLocked] = useState(false);
+  const [ordenacaoAscendente, setOrdenacaoAscendente] = useState(true);
+  const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [mostrarDropdown, setMostrarDropdown] = useState(false);
+  const [dropdownLocked, setDropdownLocked] = useState(false);
+  const [hoverDeletar, setHoverDeletar] = useState(false);
+
   useEffect(() => {
     const tokenLocal = localStorage.getItem("token");
     setToken(tokenLocal);
@@ -71,7 +73,7 @@ const [dropdownLocked, setDropdownLocked] = useState(false);
     } finally {
       setLoading(false);
     }
-  }, [token, page]); // Aqui usamos o useCallback para memorizar a função
+  }, [token, page]); 
   
   const fetchTodosClientes = useCallback(async () => {
     if (!token) return;
@@ -368,7 +370,7 @@ const [dropdownLocked, setDropdownLocked] = useState(false);
                                 setClienteParaExcluir(cliente);
                                 setIsModalExcluirOpen(true);
                               }}
-                              className="text-red-400 hover:text-red-500 transition"
+                              className="text-blue-400 bg-gradient-to-l from-[#100D1E] to-[#100D1E] hover:from-[#9C60DA] hover:to-[#43A3D5] transition duration-300 rounded-full"
                             >
                               <Image src={"/Lixeira.svg"} width={28} height={28} alt="Excluir" />
                             </button>

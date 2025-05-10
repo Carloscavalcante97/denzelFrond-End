@@ -35,6 +35,7 @@ export default function ModalCadastroColaborador({
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, isValid },
     getValues,
   } = useForm<ColaboradorForm>({
@@ -86,8 +87,9 @@ export default function ModalCadastroColaborador({
 
         return;
       }
-
+       
       setAlertaAberto(true);
+      reset();     
     } catch (error) {
       console.error(error);
       setGeneralError((error as Error).message);

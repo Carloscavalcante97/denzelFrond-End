@@ -15,6 +15,7 @@ import ModalCadastroColaborador from "../../components/ModalCadastroUsuario";
 import ModalEditarColaborador from "../../components/ModalEditarColaborador";
 import ModalExcluirColaborador from "../../components/ModalDeletarUser";
 import BuscarColaborador from "../../components/BuscarColaborador";
+import ColaboradesTitle from "/public/colaboradoresTitle.svg";
 
 export default function Colaborador() {
   const USER_URL = "https://denzel-backend.onrender.com/api/usuarios/listar";
@@ -173,8 +174,8 @@ export default function Colaborador() {
       <div className="flex-grow">
         <div className="max-w-screen-xl mx-auto px-6 py-6">
           <div className="flex items-center gap-2 text-xl font-bold">
-            <Image src={UserIcon} alt="Colaboradores" width={24} height={24} />
-            <h1>Colaboradores</h1>
+            <Image src={ColaboradesTitle} alt="Colaboradores" width={264} height={40} />
+      
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-4">
