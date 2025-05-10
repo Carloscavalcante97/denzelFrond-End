@@ -3,7 +3,7 @@
 import { Dialog } from "@headlessui/react";
 import Image from "next/image";
 import checkOk from "/public/EventoCadastrado.svg";
-import ok from "/public/Ok.svg";
+import ok from "/public/ok.svg";
 import Linha from "/public/Linha.png";
 
 interface AlertaEventoRegistradoProps {
