@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import FecharModal from "/public/Fechar-Modal.svg";
 import BuscarColaborador from "./BuscarColaborador";
-import LinhaModal from '/public/Linha-Modal.png';
+import LinhaModal from "/public/Linha-Modal.png";
+import Recrutar from "/public/RecrutarEncarregado.svg";
+import UserIcon from "/public/Profile.svg"; 
+import ButtonConcluir from "./ButtonConcluir";
+import ButtonCancelar from "./ButtonCancelar";
 
 interface Colaborador {
   id: number;
@@ -33,7 +37,7 @@ export default function BuscarColaboradorModal({
   useEffect(() => {
     if (isOpen) {
       buscarColaboradores();
-      setSelecionados([]); // Limpar seleção ao abrir
+      setSelecionados([]);
     }
   }, [isOpen, cargo]);
 
@@ -47,9 +51,7 @@ export default function BuscarColaboradorModal({
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Erro na busca de colaboradores");
-      }
+      if (!response.ok) throw new Error("Erro na busca de colaboradores");
 
       const data = await response.json();
       setColaboradores(data);
@@ -61,29 +63,22 @@ export default function BuscarColaboradorModal({
   };
 
   const handleSelecionarCheckbox = (id: number) => {
-    setSelecionados((prevSelecionados) =>
-      prevSelecionados.includes(id)
-        ? prevSelecionados.filter((selecionado) => selecionado !== id)
-        : [...prevSelecionados, id]
+    setSelecionados((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const handleConcluirSelecao = () => {
     const colaboradoresSelecionados = colaboradores
-      .filter((colaborador) => selecionados.includes(colaborador.id))
-      .map((colaborador) => ({
-        id: colaborador.id,
-        nome: colaborador.Nome,
-      }));
+      .filter((colab) => selecionados.includes(colab.id))
+      .map((colab) => ({ id: colab.id, nome: colab.Nome }));
 
     onSelecionar(colaboradoresSelecionados);
     onClose();
   };
 
-  const colaboradoresFiltrados = colaboradores.filter((colaborador) => {
-    if (!colaborador.Nome) return false;
-    return colaborador.Nome
-      .normalize("NFD")
+  const colaboradoresFiltrados = colaboradores.filter((colab) =>
+    colab.Nome?.normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
       .includes(
@@ -91,14 +86,14 @@ export default function BuscarColaboradorModal({
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
-      );
-  });
+      )
+  );
 
   return (
     <Dialog
       open={isOpen}
       onClose={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50"
     >
       <div className="relative bg-[#1c1530] text-white p-8 rounded-xl w-[600px] min-h-[500px] max-h-[80vh] overflow-y-auto shadow-2xl">
         {/* Linha Decorativa */}
@@ -119,23 +114,24 @@ export default function BuscarColaboradorModal({
           onClick={onClose}
           className="absolute top-6 right-6 hover:scale-110 transition-transform"
         >
-          <Image src={FecharModal} alt="Fechar" width={24} height={24} />
+          <Image
+            src={FecharModal}
+            className="hover:bg-gradient-to-r hover:from-[#9C60DA] hover:to-[#43A3D5] rounded-full"
+            alt="Fechar"
+            width={24}
+            height={24}
+          />
         </button>
 
         {/* Título */}
-        <h2 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-[#9C60DA] to-[#43A3D5] bg-clip-text text-transparent">
-          Recrutar Colaboradores
-        </h2>
+        <Image src={Recrutar} className="w-[375px] h-[40px] mb-4" alt="Recrutar" />
 
         {/* Campo de Busca */}
-        <div className="mb-8">
-          <BuscarColaborador
-            value={termoBusca}
-            onChange={setTermoBusca}
-          />
+        <div className="mb-6">
+          <BuscarColaborador value={termoBusca} onChange={setTermoBusca} />
         </div>
 
-        {/* Lista de Colaboradores */}
+        {/* Lista em Tabela */}
         {loading ? (
           <p className="text-center">Carregando...</p>
         ) : (
@@ -143,36 +139,66 @@ export default function BuscarColaboradorModal({
             {colaboradoresFiltrados.length === 0 ? (
               <p className="text-center text-gray-400">Nenhum colaborador encontrado.</p>
             ) : (
-              <div className="flex flex-col gap-2">
-                {colaboradoresFiltrados.map((colaborador) => (
-                  <label
-                    key={colaborador.id}
-                    className="flex items-center gap-3 cursor-pointer bg-[#2a2346] hover:bg-[#3a2e5d] transition rounded-md py-2 px-4"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selecionados.includes(colaborador.id)}
-                      onChange={() => handleSelecionarCheckbox(colaborador.id)}
-                      className="accent-purple-500 w-5 h-5"
-                    />
-                    <span className="text-white">{colaborador.Nome}</span>
-                  </label>
-                ))}
-              </div>
+              <table className="w-full border-collapse border-spacing-y-2 text-left">
+                <thead>
+                  <tr className="text-gray-300">
+                    <th className="p-3">
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex items-center gap-2">
+                          <Image src={UserIcon} alt="Colaborador" width={12} height={12} />
+                         <span className="font-bold text-white">Colaborador</span>
+                        </div>
+                        <div className="w-[180px] h-[1px] bg-gray-500 mt-1" />
+                      </div>
+                    </th>
+                    <th className="p-3">
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex items-center gap-1">
+                          <span className="font-bold text-white">ID</span>
+                        </div>
+                        <div className="w-[80px] h-[1px] bg-gray-500 mt-1" />
+                      </div>
+                    </th>
+                    <th className="p-3 text-white font-bold">Selecionar</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {colaboradoresFiltrados.map((colab) => (
+                    <tr
+                      key={colab.id}
+                      className=" hover:bg-[#3a2e5d] transition-colors "
+                    >
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <Image src={UserIcon} alt="Colaborador" width={12} height={12} />
+                          <span>{colab.Nome}</span>
+                        </div>
+                      </td>
+                      <td className="p-3">{colab.Nome}</td>
+                      <td className="p-3 text-gray-300">ID: {colab.id}</td>
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          checked={selecionados.includes(colab.id)}
+                          onChange={() => handleSelecionarCheckbox(colab.id)}
+                          className="accent-purple-500 w-5 h-5"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </>
         )}
 
         {/* Botão Concluir */}
         {colaboradoresFiltrados.length > 0 && (
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={handleConcluirSelecao}
-              className="bg-gradient-to-r from-[#9C60DA] to-[#43A3D5] px-6 py-2 rounded-md font-bold hover:brightness-110 transition"
-            >
-              Concluir Seleção
-            </button>
-          </div>
+          <div className="mt-6 flex justify-start gap-4 mt-20">
+                    <ButtonCancelar onClick={onClose} />
+                    <ButtonConcluir onClick={() => { handleConcluirSelecao();}} />
+                  </div>
         )}
       </div>
     </Dialog>
