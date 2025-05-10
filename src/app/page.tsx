@@ -59,17 +59,22 @@ export default function Login() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response);
 
       if (!response.ok) throw new Error("Erro ao buscar colaborador.");
 
       const data = await response.json();
 
       // 🚨 Se não for encarregado, manda para home padrão
-      if (data.cargo?.toLowerCase() !== 'encarregado') {
-        router.push('/clientes');
-        return;
-      }
+     const cargo = data.cargo?.toLowerCase();
+const isEncarregado = cargo === "encarregado iluminacao" || cargo === "encarregado estrutura";
 
+if (!isEncarregado) {
+  router.push('/clientes');
+  return;
+}
+
+      console.log(data.IdMontagem, data.IdDesmontagem);
       const idEvento = data.idEventoMontagem || data.idEventoDesmontagem;
 
       if (idEvento) {
